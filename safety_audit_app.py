@@ -1,8 +1,11 @@
-
 import streamlit as st
 import pandas as pd
 from datetime import datetime
 from io import BytesIO
+import openai
+
+# Set your OpenAI API key
+openai.api_key = 'YOUR_OPENAI_API_KEY'  # Replace with your actual API key
 
 # User authentication
 def login():
@@ -15,11 +18,23 @@ def login():
         else:
             st.sidebar.error("Invalid username or password")
 
+# Function to get countermeasures from ChatGPT
+def get_countermeasures(observation, hazard_category):
+    prompt = f"""Observation: {observation}
+Hazard Category: {hazard_category}
+
+Based on the observation and hazard category, suggest applicable Indian standards and detailed countermeasures."""
+    response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=prompt,
+        max_tokens=150
+    )
+    return response.choices[0].text.strip()
+
 # Main app
 def main():
     st.title("Safety Audit Assistant")
 
-    # User input page
     if 'logged_in' not in st.session_state:
         login()
     else:
@@ -36,7 +51,7 @@ def main():
 
         st.header("Observation Entry")
         observations = []
-        for i in range(1, 6):  # Allow up to 5 observations
+        for i in range(1, 6):
             st.subheader(f"Observation {i}")
             observation = st.text_area(f"Observation Details {i}")
             hazard_category = st.selectbox(f"Hazard Category {i}", [
@@ -51,25 +66,17 @@ def main():
         if st.button("Analyze Observations"):
             results = []
             for obs, category in observations:
-                # Predict hazard category (placeholder logic)
-                predicted_category = category
-
-                # Map to standards and countermeasures (placeholder logic)
-                standards = "Relevant Indian/NBC standards"
-                countermeasures = "Suggested countermeasures"
-
+                countermeasures = get_countermeasures(obs, category)
                 results.append({
                     "Observation": obs,
-                    "Predicted Hazard Category": predicted_category,
-                    "Standards": standards,
-                    "Countermeasures": countermeasures
+                    "Hazard Category": category,
+                    "Countermeasures & Standards": countermeasures
                 })
 
             st.header("Results")
             results_df = pd.DataFrame(results)
             st.write(results_df)
 
-            # Export to Excel
             if st.button("Export to Excel"):
                 output = BytesIO()
                 with pd.ExcelWriter(output, engine='openpyxl') as writer:
@@ -81,10 +88,8 @@ def main():
                     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )
 
-        # Admin dashboard
         st.header("Admin Dashboard")
         if st.button("View Audit Logs"):
-            # Placeholder for audit logs
             audit_logs = pd.DataFrame({
                 "Auditor Name": [auditor_name],
                 "Auditor ID": [auditor_id],
@@ -93,13 +98,11 @@ def main():
                 "Location": [location],
                 "Date of Audit": [date_of_audit],
                 "Observation": [obs for obs, _ in observations],
-                "Predicted Hazard Category": [predicted_category for _, predicted_category in observations],
-                "Standards": [standards for _ in observations],
-                "Countermeasures": [countermeasures for _ in observations]
+                "Hazard Category": [category for _, category in observations],
+                "Countermeasures & Standards": [get_countermeasures(obs, category) for obs, category in observations]
             })
             st.write(audit_logs)
 
-            # Export audit logs to Excel
             if st.button("Export Audit Logs to Excel"):
                 output = BytesIO()
                 with pd.ExcelWriter(output, engine='openpyxl') as writer:
