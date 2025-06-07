@@ -5,7 +5,7 @@ from io import BytesIO
 import openai
 
 # Set your OpenAI API key
-openai.api_key = 'YOUR_OPENAI_API_KEY'  # Replace with your actual API key
+openai.api_key = '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'  # Replace with your actual API key
 
 # User authentication
 def login():
@@ -24,12 +24,15 @@ def get_countermeasures(observation, hazard_category):
 Hazard Category: {hazard_category}
 
 Based on the observation and hazard category, suggest applicable Indian standards and detailed countermeasures."""
-    response = openai.Completion.create(
-        engine="text-davinci-003",
-        prompt=prompt,
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are an expert in safety standards."},
+            {"role": "user", "content": prompt}
+        ],
         max_tokens=150
     )
-    return response.choices[0].text.strip()
+    return response.choices[0].message['content'].strip()
 
 # Main app
 def main():
@@ -116,4 +119,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
