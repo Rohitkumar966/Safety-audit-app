@@ -4,8 +4,8 @@ from datetime import datetime
 from io import BytesIO
 import openai
 
-# Set your OpenAI API key
-openai.api_key = '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'
+# Initialize OpenAI client
+client = openai.OpenAI(api_key='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')
 
 # User authentication
 def login():
@@ -26,7 +26,7 @@ def get_countermeasures(observation, hazard_category):
         "Based on the observation and hazard category, suggest applicable Indian standards and detailed countermeasures."
     )
 
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-4",
         messages=[
             {"role": "system", "content": "You are an expert in safety standards."},
@@ -36,7 +36,7 @@ def get_countermeasures(observation, hazard_category):
         max_tokens=500
     )
 
-    return response.choices[0].message['content'].strip()
+    return response.choices[0].message.content.strip()
 
 # Main app
 def main():
