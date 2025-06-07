@@ -1,10 +1,11 @@
+import streamlit as st
 import pandas as pd
 from datetime import datetime
 from io import BytesIO
 import openai
 
 # Set your OpenAI API key
-openai.api_key = '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'  # Replace with your actual API key
+openai.api_key = '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'
 
 # User authentication
 def login():
