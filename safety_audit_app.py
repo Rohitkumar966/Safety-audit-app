@@ -19,25 +19,24 @@ def login():
             st.sidebar.error("Invalid username or password")
 
 # Function to get countermeasures from ChatGPT
-
 def get_countermeasures(observation, hazard_category):
-    prompt = (
-        f"Observation: {observation}\n"
-        f"Hazard Category: {hazard_category}\n\n"
-        "Based on the observation and hazard category, suggest applicable Indian standards and detailed countermeasures."
-    )
+    prompt = (
+        f"Observation: {observation}\n"
+        f"Hazard Category: {hazard_category}\n\n"
+        "Based on the observation and hazard category, suggest applicable Indian standards and detailed countermeasures."
+    )
 
-    response = openai.ChatCompletion.create(
-        model="gpt-4",  # Updated to use GPT-4
-        messages=[
-            {"role": "system", "content": "You are an expert in safety standards."},
-            {"role": "user", "content": prompt}
-        ],
-        temperature=0.7,
-        max_tokens=500
-    )
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=[
+            {"role": "system", "content": "You are an expert in safety standards."},
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0.7,
+        max_tokens=500
+    )
 
-    return response.choices[0].message['content'].strip()
+    return response.choices[0].message['content'].strip()
 
 # Main app
 def main():
