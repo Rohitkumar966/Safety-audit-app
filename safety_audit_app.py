@@ -21,9 +21,6 @@ def login():
 # Function to get countermeasures from ChatGPT
 
 def get_countermeasures(observation, hazard_category):
-    """
-    Fetches applicable Indian standards and detailed countermeasures from OpenAI based on the observation and hazard category.
-    """
     prompt = (
         f"Observation: {observation}\n"
         f"Hazard Category: {hazard_category}\n\n"
