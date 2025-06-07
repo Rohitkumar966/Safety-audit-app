@@ -5,7 +5,7 @@ from io import BytesIO
 import openai
 
 # Set your OpenAI API key
-openai.api_key = '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'
+openai.api_key = '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'
 
 # User authentication
 def login():
@@ -19,20 +19,28 @@ def login():
             st.sidebar.error("Invalid username or password")
 
 # Function to get countermeasures from ChatGPT
-def get_countermeasures(observation, hazard_category):
-    prompt = f"""Observation: {observation}
-Hazard Category: {hazard_category}
 
-Based on the observation and hazard category, suggest applicable Indian standards and detailed countermeasures."""
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "You are an expert in safety standards."},
-            {"role": "user", "content": prompt}
-        ],
-        max_tokens=150
-    )
-    return response.choices[0].message['content'].strip()
+def get_countermeasures(observation, hazard_category):
+    """
+    Fetches applicable Indian standards and detailed countermeasures from OpenAI based on the observation and hazard category.
+    """
+    prompt = (
+        f"Observation: {observation}\n"
+        f"Hazard Category: {hazard_category}\n\n"
+        "Based on the observation and hazard category, suggest applicable Indian standards and detailed countermeasures."
+    )
+
+    response = openai.ChatCompletion.create(
+        model="gpt-4",  # Updated to use GPT-4
+        messages=[
+            {"role": "system", "content": "You are an expert in safety standards."},
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0.7,
+        max_tokens=500
+    )
+
+    return response.choices[0].message['content'].strip()
 
 # Main app
 def main():
